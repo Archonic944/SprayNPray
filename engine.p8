@@ -1,7 +1,199 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
-function
+
+
+	-- objs is all objects
+	-- bodies are objs w/ collision
+local objs,ents,bodies,
+
+	-- funcs that run every frame
+	-- timers with new_timer are loops
+loops,
+
+	-- logs for debug
+logs,
+	-- queue for obj deletion
+del_que,
+	-- id counter for giving each obj a unique id
+id_cnt
+=
+{},{},{},
+
+{},
+{},
+{},
+0
+
+	-- make layers
+for i=1,8 do
+	add(objs,{})
+end
+
+
+	-- utilities by ms. mouse
+local function compose(a, b)
+	return function(...)return a(b(...))end
+end
+
+local function bind_front(f,v)
+	return function(...)
+		return f(v, ...)
+	end
+end
+
+
+	-- add log
+local function log(l,i)
+	logs[i or 1]=l or "false"
+end
+
+
+	-- create loop that runs every frame
+local function new_loop(func)
+	return add(loops,func)
+end
+	-- new layer loop, useful for drawing, just a token optimization
+function new_l_loop(func,l,x,y)
+	return new_obj({
+		_,
+		func,
+	},l,x,y)
+end
+
+	-- delete obj
+local function del_obj(o)
+	add(del_que,o).del=true
+	return o
+end
+
+
+
+	-- delete loop
+local del_loop
+=
+bind_front(del,loops)
+
+
+
+	-- new timer, if loop is true it will repeat
+local function new_timer(am,func,loop)
+	am=am&-1
+	local org_am,timer=am
+	
+	timer=function()
+		if am==0do
+			am=org_am
+			func()
+			if(not loop)del_loop(timer)
+		else
+			am-=1
+		end
+	end
+	
+	return new_loop(timer)
+end
+
+
+	-- token optimization
+function set_meta(o)
+	return setmetatable(o,{__index=_ENV})
+end
+	-- create new object
+function new_obj(no,l,x,y)
+	local o=set_meta{
+		loops={},objs={},
+		init=no[1],upd=no[2],
+		l=l,id=id_cnt
+	}
+	
+	
+	id_cnt+=.001
+	
+	
+	o.new_loop,o.del_loop,o.new_timer,
+	o.new_l_loop,o.del_obj,
+	
+	=
+	function(func)
+		return add(o.loops,new_loop(function()func(o)end))
+	end,
+	
+ compose(bind_front(del,o.loops),del_loop),
+ compose(bind_front(add,o.loops),new_timer),
+ compose(bind_front(add,o.objs),new_l_loop),
+ compose(bind_front(del,o.objs),del_obj)
+	
+
+	if(x)o.x,o.y=x,y
+	if(o.init)o:init()
+	
+	return add(objs[o.l],o)
+end
+-->8
+new_obj({
+		function(_ENV)
+		
+		end,
+		
+		
+		function(_ENV)
+			spr(1,x,y)
+		end
+	},
+		-- layer
+	4,
+		-- position,
+	64,64
+)
+-->8
+
+	-- game loop, faster than _update()
+::_::
+cls()
+
+	-- easy input vars
+⬅️,➡️,⬆️,⬇️,🅾️,❎
+=
+btn(0),btn(1),btn(2),btn(3),btn(4),btn(5)
+
+
+	-- update all object layers
+for a=1,8 do
+	for _,o in inext,objs[a]do
+		o:upd()
+	end
+end
+
+
+for _,l in inext,loops do
+	l()
+end
+
+
+	-- obj deletion queue
+for _,o in inext,del_que do
+	del(objs[o.l],o)
+	
+	del(ents,
+		del(targs,
+			del(bodies,o)
+		)
+	)
+	
+	foreach(o.objs,o.del_obj)
+	foreach(o.loops,o.del_loop)
+
+	del(del_que,o)
+end
+
+
+	-- print logs
+for i,l in inext,logs do
+	?l,camx,10*(i-1)+camy,8
+end
+
+flip()goto _
 __gfx__
 0000000011111111f00000000000000f00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff2222222222222222ffffffff
 0000000011111111f00000000000000f00000000f00000000000000f00000000f00000000000000ff00000000000000f0000000020000000000000020000000f
