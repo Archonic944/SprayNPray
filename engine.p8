@@ -151,13 +151,13 @@ next_building = 0 --x-coordinate
 buildings = {}
 --list of map segments that are copy-pasted to make buildings
 building_templates = { --{inclusive map boundaries: {mapx1, mapy1, mapx2, mapy2}, {...template indices feasibly generated after this one (self-referential indexes)}}
-	{{4,4,6,7}, {3,5,6,7,9,10,11,12,13,14,15}}, --mid wide (1)
+	{{4,4,6,7}, {3,5,6,7,9,11,12,13,14,15}}, --mid wide (1)
 	{{8,2,9,7}, {1,3,4,5,6,7,8,9,10,11,12,13,14,15,16}}, --tall skinny (2)
 	{{11,5,18,7}, {1,6,7,9,11,14}}, -- low wide (market) (3)
 	{{21,1,27,7}, {1,3,5,6,7,9,10,11,12,13,14}}, -- tall wide (aaa!) (4)
 	{{28,2,29,7}, {1,2,3,6,7,8,9,10,11,12,13,14,15,16}}, --mid skinny (5)
-	{{31,5,32,7}, {1,3,7,9,11,12,14}}, --low skinny (6)
-	{{34,4,35,7}, {1,3,5,6,9,10,11,12,13,14}}, --a-little-taller-than-low skinny (7)
+	{{31,5,32,7}, {1,3,7,11,12,14}}, --low skinny (6)
+	{{34,4,35,7}, {1,3,5,6,9,11,12,13,14}}, --a-little-taller-than-low skinny (7)
 	{{37,1,45,7}, {1,3,6,7,9,11,12,14}}, --tall then low (factory) (8)
 	{{48,2,53,7}, {1,3,4,5,6,7,8,10,11,12,13,14,15,16}}, --idk at this point (9)
 	{{55,1,58,7}, {1,2,3,5,6,7,9,10,11,12,13,14,15,16}}, --mid-height mid-wide (10)
@@ -165,7 +165,7 @@ building_templates = { --{inclusive map boundaries: {mapx1, mapy1, mapx2, mapy2}
 	{{65,4,69,7}, {1,3,5,6,7,9,10,11,12,13,14}}, --mid wide horizontal girder (12)
 	{{71,3,73,7}, {1,2,3,5,6,7,9,10,11,12,13,14,15,16}}, --mid skinny horizontal girder (13)
 	{{75,6,76,7}, {3,6,11}}, --low skinny hori girder (14)
-	{{78,0,82,7}, {1,2,3,5,6,7,9,10,11,12,13,14,16}}, --double girder mid (15)
+	{{78,0,82,7}, {1,3,6,7,9,11,14}}, --double girder mid (15)
 	{{84,1,88,7}, {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}} --the T (16)
 }
 --make inclusive
@@ -199,6 +199,61 @@ function delete_building() --deletes the building at index 1
 	deli(buildings, 1)
 end
 
+-- gets a sprite at a world location, for collision. assumes buildings is sorted by x
+function get_sprite(x,y)
+    
+    -- safety check
+    if #buildings == 0 then return nil end
+    
+    -- find the building at this x position
+    local b_inside = nil
+    for b in all(buildings) do
+        if x >= b.x then 
+            b_inside = b 
+        else 
+            break 
+        end
+    end
+    
+    -- if we found no building (shouldn't happen) or we're before first building
+    if b_inside == nil then return nil end
+    
+    -- get width of this building (calculate from template)
+    local template = b_inside.template[1]
+    local width = (template[3] - template[1]) * 8
+    
+    -- check if we're past the end of the building
+    if x >= (b_inside.x + width) then return nil end
+    
+    -- local coords within building
+    local lx = x - b_inside.x
+    local ly = 64-y --dont ask
+    
+    -- early out if outside bounds
+    if lx < 0 or ly < 0 then return nil end
+    
+    -- map tile coords
+    local tx1 = template[1]
+    local ty1 = template[2]
+    local tx2 = template[3]
+    local ty2 = template[4]
+    
+    local map_x = tx1 + flr(lx/8)
+    local map_y = ty1 + flr(ly/8)
+    
+    -- bounds check
+    if map_x < tx1 or map_x >= tx2 or map_y < ty1 or map_y >= ty2 then
+        return nil
+    end
+    
+    return mget(map_x, map_y)
+end
+
+--adds to account for isometric view
+function is_colliding(x,y)
+    local spr = get_sprite(x,y+2)
+    return spr and fget(spr,0) or false
+end
 
 new_obj({ --builder (invisible)
 		function(_ENV)
@@ -261,10 +316,7 @@ local function anim_init(_ENV,str,f)
 	if(f)anim(_ENV,f)
 end
 
-
-
-
-
+grav = 0.4
 player = new_obj({
 	function(_ENV)
 		anim_init(_ENV,[[
@@ -272,12 +324,13 @@ player = new_obj({
 			52,53,54,55,56,57,1,1|
 		]],2)
 		
-		dx,dy=0,0
+		dx,dy,airframes=0,0,0
 	end,
 	
 	function(_ENV)
 		spr(spri,x,y,1,1,flipx)
-		
+		--update air time
+		--update velocities
 		if ➡️ do
 			dx+=.4
 			flipx=_
@@ -286,17 +339,67 @@ player = new_obj({
 			dx-=.4
 			flipx=true
 		end
-		x+=dx
-		
+		-- a basic jump for testing
+		local hxx,hxy,hyx,hyy = x + (4*sgn(dx)) + dx + 4, y+7, x+4, y + (4*sgn(dy)) + dy + 4
+		if (🅾️ and airframes < 10) dy -= 3
+		if is_colliding(hxx, hxy) then pset(hxx, hxy, 8)
+		else pset(hxx, hxy, 11) end
+		if is_colliding(hyx, hyy) then pset(hyx, hyy, 8)
+		else pset(hyx, hyy, 11) end
+		if(not is_colliding(hxx, hxy)) x+=dx
+		if (not is_colliding(hyx, hyy)) y += dy
+		if is_colliding(hyx,hyy) then airframes=0 else airframes+=1 end --update airframes
 		dx*=.8
+		dy += grav
+		dy*=.8
+		if(dy < 0.1) dy=0
 	end
-}, 5, 8, 32)
+}, 5, 8, 0)
+
+-- debug object draws circle of collision points
+collision_debug = new_obj({
+	function(_ENV) end,
+	function(_ENV)
+		x = player.x
+		y = player.y
+		
+		-- draw debug info
+		print("x:"..x.." y:"..y, x-24, y-32, 7)
+		
+		-- draw collision circle 
+		local r = 24
+		for a=0,1,0.05 do
+			local px = x + cos(a) * r
+			local py = y + sin(a) * r
+			local col = is_colliding(px, py) and 8 or 11
+			pset(px, py, col) -- screen coords
+		end
+	end
+}, 7, player.x, player.y)
 
 -->8
 	-- game loop, faster than _update()
 --palt(0, false)
 --palt(1, true)
 poke(0x5f2c, 3) --low rez mode
+camx,camy = 0,0
+
+-- debug function to visualize building bounds
+function debug_draw_buildings()
+  -- draw each building bounds
+  for b in all(buildings) do
+    local template = b.template[1]
+    local w = (template[3] - template[1]) * 8  -- width in pixels
+    local h = (template[4] - template[2]) * 8  -- height in pixels
+    local x,y = b.x,64  -- screen coords
+    
+    -- building frame
+    rect(x,y, x+w-1,y-h-1, 12)
+    
+    -- id and position
+    print(b.template_id, x+2, y+2, 64)
+  end
+end
 
 ::_:: -- game loop begin
 cls(0)
@@ -310,26 +413,24 @@ btn(0),btn(1),btn(2),btn(3),btn(4),btn(5)
 
 	-- update all object layers
 for a=1,8 do
-	for _,o in inext,objs[a]do
+	for _,o in pairs(objs[a])do
 		o:upd()
 	end
 end
 
 
-for _,l in inext,loops do
+for _,l in pairs(loops) do
 	l()
 end
 
 
 	-- obj deletion queue
-for _,o in inext,del_que do
+for _,o in pairs(del_que) do
 	del(objs[o.l],o)
 	
-	del(ents,
-		del(targs,
-			del(bodies,o)
-		)
-	)
+	if o.body then
+		del(bodies,o)
+	end
 	
 	foreach(o.objs,o.del_obj)
 	foreach(o.loops,o.del_loop)
@@ -341,8 +442,11 @@ end
 camx,camy=player.x-28,2
 camera(camx, camy)
 
+-- draw building debug info
+debug_draw_buildings()
+
 	-- print logs
-for i,l in inext,logs do
+for i,l in pairs(logs) do
 	?l,camx,10*(i-1)+camy,8
 end
 
@@ -400,7 +504,7 @@ function pnt_col(ox,oy,bods,f)
 	 for i,_ENV in next,bodies do
 	  if w do
 		  if(c_id~=bods)bx,by=dist(ox,x),dist(oy,y-dy) if(bx<hw and by<hh)return 1
-	 	end
+		end
 	 end
 	end
 	
@@ -427,7 +531,7 @@ end
 function body_col_check(_ENV,vx,vy)
  local ox,oy=0
  for i,b in next,bodies do
- 	if(b.w)if(b.c_id~=c_id)ox,oy=dist(x+vx,b.x),dist(y+vy,b.y-b.dy) if(ox<hw+b.hw and oy<hh+b.hh)return b
+	if(b.w)if(b.c_id~=c_id)ox,oy=dist(x+vx,b.x),dist(y+vy,b.y-b.dy) if(ox<hw+b.hw and oy<hh+b.hh)return b
 	end
 end
 
@@ -554,14 +658,14 @@ c00000cc000000000000000000000000000000000000000000000000000000000000000000000000
 cc000cc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0ccccc00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __gff__
-0001010101010101010101010101010101010101010000010101010101010001010101010101010101010001010101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0001010101010101010101010101010101010101010100010101010101010001010101010101010101010001010101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002d1c1c1c0b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0000000000000000000000000000000000000000002d1c1c1c1c1c0b0000000000000000002d1c1c1c1c1c1c1c0b0000000000000000002d1c1c0b000000000000000000000000000000000000001f0000001b002d1c1c1c0b000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000000002d0b00000000000000000000001f11121012141700000000000000000002040404040404040300002d1c1c1c1c0b0002040403000000000000000000000000000000000000002a0000001b001f0400041b000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000000001f1b0000000000000000000000020000000000002d0b00000000000000020404040404040403000002040404040300020404030000000000000000000000002d1c0b000000001e1d1d1d1d000b04040003000000000000000000000000000000000000000000000000000000000000000000000000000000
-000000002d1c0b00020300000000000000000000001f0404000400031f1b000000002d0b00020404040404040403000002040404040300020404030000000000002d1c1c1c0b00020403000000001e1e1e1e1e00002c151b1c000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000002d1c1c1c1c1c0b0000000000000000002d1c0b0000000000000000000000000000002d1c1c0b000000000000000000000000000000000000001f0000001b002d1c1c1c0b000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000002d0b00000000000000000000001f11121012141700000000000000000002040300000000000000000000000000000002040403000000000000000000000000000000000000002a0000001b001f0400041b000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000001f1b0000000000000000000000020000000000002d0b0000000000000002040300000000000000000000002d1c0b00020404030000000000000000000000002d1c0b000000001e1d1d1d1d000b04040003000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000002d1c0b00020300000000000000000000001f0404000400031f1b000000002d0b000204041c1c1c1c1c0b00002d1c1c1b040300020404030000000000002d1c1c1c0b00020403000000001e1e1e1e1e00002c151b1c000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000020003001f1b002d1c1c1c1c1c1c0b0000020400040004030203002d0b0002030002040404040404040300000204040404030002040403002d1c1c0b00020404040300020403000000002d1d1c1d0a0000021f0300000000000000000000000000000000000000000000000000000000000000000000000000000000
-000000001f041b00020300021012111214111700000200040004041b0203001f1b001f1b0002040404040404040300000204040404030002040403000204040300020404040300020403002d0b001f0000001b00001f151b00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000020403001f1b00020400040400041b0000020400040400031f1b0002030002030002040404040404040300000204040404030002040403000204040300020404040300020403000203001f0000001b0000021f0300000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000001f041b00020300021012111214111700000200040004041b0203001f1b001f1b0002040404141304040300000204040404030002040403000204040300020404040300020403002d0b001f0000001b00001f151b00000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000020403001f1b00020421040421041b0000020400040400031f1b00020300020300020404040d0e04040300000204040404030002040403000204040300020404040300020403000203001f0000001b0000021f0300000000000000000000000000000000000000000000000000000000000000000000000000000000
