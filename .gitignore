@@ -403,3 +403,4 @@ FodyWeavers.xsd
 # DS store
 */.DS_Store
 .DS_Store
+/graffitiheroes/addons/godot_super-wakatime
