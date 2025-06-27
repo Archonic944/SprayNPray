@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://bjdj4x68n5xv1" path="res://MainScene.cs" id="1_0f027"]
 [ext_resource type="Texture2D" uid="uid://m35oqslxbrl7" path="res://images/graffiti.png" id="2_2c62f"]
-[ext_resource type="Curve2D" uid="uid://4tqfgxpetgvs" path="res://curves/double_z.tres" id="2_gyfs4"]
 
 [sub_resource type="Curve" id="Curve_o3jxj"]
 _data = [Vector2(0, 0.191011), 0.0, 0.0, 0, 0, Vector2(0.538889, 0.674157), 0.0, 0.0, 0, 0, Vector2(0.861111, 0.337079), 0.0, 0.0, 0, 0]
@@ -10,6 +9,12 @@ point_count = 3
 
 [sub_resource type="CurveTexture" id="CurveTexture_0f027"]
 curve = SubResource("Curve_o3jxj")
+
+[sub_resource type="Curve2D" id="Curve2D_2c62f"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -9.19378, -16.0279, 0, 0, 0, 0, 807.638, 437.631)
+}
+point_count = 2
 
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_0f027")
@@ -23,11 +28,11 @@ texture = SubResource("CurveTexture_0f027")
 z_index = 1
 position = Vector2(12, 24)
 scale = Vector2(1.414, 1.435)
-curve = ExtResource("2_gyfs4")
+curve = SubResource("Curve2D_2c62f")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
-position = Vector2(293.494, 61.324)
-rotation = -0.0293568
+position = Vector2(-9.19378, -16.0279)
+rotation = 0.506971
 
 [node name="Sprite2D" type="Sprite2D" parent="Path2D/PathFollow2D"]
 scale = Vector2(0.5, 0.5)

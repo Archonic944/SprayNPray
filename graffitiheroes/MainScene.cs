@@ -3,17 +3,41 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Godot;
+using Vector2 = Godot.Vector2;
 
 public partial class MainScene : Node2D
 {
 	private PathFollow2D _follower;
 	private Sprite2D _sprite;
+
+	private static readonly bool CurveReshape = true;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		_follower = GetNode<PathFollow2D>("Path2D/PathFollow2D");
 		_follower.ProgressRatio = 0;
 		_sprite = GetNode<Sprite2D>("Path2D/PathFollow2D/Sprite2D");
+		//configure resources
+		if (CurveReshape)
+		{
+			foreach (string res in ResourceLoader.ListDirectory("res://curves"))
+			{
+				Curve2D curve = (Curve2D) ResourceLoader.Load("res://curves/" + res,"Curve2D").Duplicate(true);
+				Vector2 curveCenter = Vector2.Zero;
+				for (int i = 0; i < curve.PointCount; i++)
+				{
+					curveCenter += curve.GetPointPosition(i);
+				}
+				curveCenter /= curve.PointCount;
+				Vector2 targetCenter = GetViewportRect().Size / 2;
+				Vector2 delta = targetCenter - curveCenter;
+				for (int i = 0; i < curve.PointCount; i++)
+				{
+					curve.SetPointPosition(i, curve.GetPointPosition(i) + delta);
+				}
+			}
+		}
 	}
 
 	public static float DrawRate = 0.02f; //100 new dots per second
