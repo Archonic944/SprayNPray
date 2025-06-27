@@ -95,15 +95,16 @@ public partial class MainScene : Node2D
 			short steps = (short)(delta / (_judgeTime / _possiblePoints)); //how many full steps we get to do
 			for (int i = 0; i < steps; i++)
 			{
+
 				//optimistically find distance to closest point
 				float min = float.MaxValue;
 				foreach (var drawnSprite in _drawnSprites)
 				{
-					float distanceSquared = _follower.GlobalPosition.DistanceSquaredTo(drawnSprite.GlobalPosition);
-					if (distanceSquared < min) min = distanceSquared;
+					float distance = _follower.GlobalPosition.DistanceTo(drawnSprite.GlobalPosition);
+					if (distance < min) min = distance;
 				}
 				Console.WriteLine("Distance: " + min);
-				_earnedPoints += float.Min(1 / min, 1);
+				_earnedPoints += float.Min(10 / min, 1);
 				if (_follower.ProgressRatio + _judgePathStep < 1) _follower.ProgressRatio += _judgePathStep;
 				else {
 					_follower.ProgressRatio = 1;
@@ -115,7 +116,7 @@ public partial class MainScene : Node2D
 			if (_follower.ProgressRatio + _judgePathStep > 1)
 			{
 				state = "judging_finished";
-				Console.Write("Finished judging in " + (_elapsed - _lastUpdated) + "s");
+				Console.Write("Finished judging in " + (_elapsed - _lastUpdated) + "s. Score is "  + _earnedPoints);
 			}
 		}else if (state == "judging_finished")
 		{
