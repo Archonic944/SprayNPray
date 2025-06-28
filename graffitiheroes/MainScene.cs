@@ -45,18 +45,16 @@ public partial class MainScene : Node2D
 
 	void SetCurve(string curve)
 	{
-		// if (!unusedCurves.Remove(curve))
-		// {
-		// 	//crash game
-		// 	throw new Exception("Curve " + curve + " is already used or does not exist.");
-		// }
-		// Curve2D curve2d = ResourceLoader.Load<Curve2D>("res://curves/" + curve);
-		// if (curve2d == null)
-		// {
-		// 	throw new Exception("Curve " + curve + " does not exist.");
-		// }
-		curve = "straight_line_debug.tres";
+		if (!unusedCurves.Remove(curve))
+		{
+			//crash game
+			throw new Exception("Curve " + curve + " is already used or does not exist.");
+		}
 		Curve2D curve2d = ResourceLoader.Load<Curve2D>("res://curves/" + curve);
+		if (curve2d == null)
+		{
+			throw new Exception("Curve " + curve + " does not exist.");
+		}
 		_path.Curve = curve2d;
 	}
 
@@ -72,26 +70,18 @@ public partial class MainScene : Node2D
 	private static double _finishWaitTime = 1; // seconds to wait after drawing
 	private double _finishTimer;
 
-	//variables for judging ECF
-	private double _lastAngle = 0;
-	private float _lastDistance = 0;
-
 	private float _judgingProgress = 0; //progresratio amount
 
-	private static readonly float _possiblePoints = 100; // Reduced from 1000 to 100
-	private double _earnedPoints = 0;
+	private static readonly float _possiblePoints = 1000;
+	private float _earnedPoints = 0;
 
 	private float _judgeTime = 2; //seconds
 	private float _judgePathStep = 1f/_possiblePoints;
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if (_elapsed == 0)
-		{
-			_elapsed += delta;
-			return; //we chuck the first frame because uhh umm uhh yeah huh right well yep
-		}
 		_elapsed += delta;
+		if (_elapsed == 0) return; //we chuck the first frame because uhh umm uhh yeah huh right well yep
 		if (state == "drawing")
 		{
 			Console.WriteLine("drawing");
@@ -150,15 +140,6 @@ public partial class MainScene : Node2D
 			{
 				//begin judging
 				state = "judging";
-				Timer timer = new Timer();
-				timer.WaitTime = 0.2f;
-				timer.OneShot = false;
-				timer.Timeout += () => updateText((int)Math.Round(_earnedPoints));
-				AddChild(timer);
-				timer.Start();
-				timer.SetName("_timer");
-				
-				_text.Show();
 				_lastUpdated = _elapsed; 
 				_sprite.Hide();
 				//unhide all the template sprites
@@ -168,46 +149,60 @@ public partial class MainScene : Node2D
 					sprite.Modulate = new Color(0, 160, 50, 0.5f);
 				}
 			}
-		}else if (state == "judging") //judge with error-carried-forward
+		}else if (state == "judging")
 		{
 			ushort steps = (ushort)(delta / (_judgeTime / _possiblePoints)); //how many full steps we get to do
-			//optimistically find distance to closest point
-			float min = float.MaxValue;
-			Vector2 minVec = GetViewportRect().Size / 2; //if you see lines drawing to the center, you know something went wrong
-			foreach (var drawnSprite in _drawnSprites)
+			for (int i = 0; i < steps; i++)
 			{
-				float distance = _follower.GlobalPosition.DistanceTo(drawnSprite.GlobalPosition);
-				if (distance < min)
+				//optimistically find distance to closest point
+				float min = float.MaxValue;
+				Vector2 minVec = GetViewportRect().Size / 2; //if you see lines drawing to the center, you know something went wrong
+				foreach (var drawnSprite in _drawnSprites)
 				{
-					min = distance;
-					minVec = drawnSprite.GlobalPosition;
+					float distance = _follower.GlobalPosition.DistanceTo(drawnSprite.GlobalPosition);
+					if (distance < min)
+					{
+						min = distance;
+						minVec = drawnSprite.GlobalPosition;
+					}
 				}
+				Console.WriteLine("Distance: " + min);
+				float earnedPoint = 10 / min;
+				Color c = Colors.Red.Lerp(Colors.Green, earnedPoint);
+				Line2D line = new Line2D();
+				AddChild(line);
+				line.DefaultColor = c;
+				line.AddPoint(_follower.GlobalPosition);
+				line.AddPoint(minVec);
+				line.SetName("_judgeLine " + _elapsed + " #"+ i);
+				_earnedPoints += float.Min(earnedPoint, 1);
+				if (_follower.ProgressRatio + _judgePathStep < 1) _follower.ProgressRatio += _judgePathStep;
+				else {
+					_follower.ProgressRatio = 1;
+					break;
+				}
+				Console.WriteLine("Score is now " + _earnedPoints);
 			}
-			double angleOffset = Math.Atan2(minVec.Y - _follower.GlobalPosition.Y, minVec.X - _follower.GlobalPosition.X) / (Double.Pi * 2);
-			double angleError = Math.Abs(angleOffset - _lastAngle) * 5;
-			_lastAngle = angleOffset;
-			double totalError = angleError + (15/ min);
-			Console.WriteLine("Error: " + totalError);
-			double earnedPoint = 1 / totalError;
-			Color c = Colors.Red.Lerp(Colors.Green, (float) earnedPoint);
-			Line2D line = new Line2D();
-			AddChild(line);
-			line.DefaultColor = c;
-			line.AddPoint(_follower.GlobalPosition);
-			line.AddPoint(minVec);
-			line.SetName("_judgeLine " + _elapsed);
-			_earnedPoints += double.Min(earnedPoint, 1) * steps;
-			if (_follower.ProgressRatio + (_judgePathStep * steps) < 1) _follower.ProgressRatio += _judgePathStep*steps;
-			else {
-				_follower.ProgressRatio = 1;
-			}
-			Console.WriteLine("Score is now " + _earnedPoints);
 
 			if (_follower.ProgressRatio + _judgePathStep > 1)
 			{
 				state = "judging_finished";
 				Console.Write("Finished judging in " + (_elapsed - _lastUpdated) + "s. Score is "  + _earnedPoints);
-				updateText((int) _earnedPoints);
+				_text.Text = "Score: [color=green]" + _earnedPoints + "\n";
+				{
+					int i = 0;
+					for(; i<StarThresholds.Length; i++)
+					{
+						if (_earnedPoints < StarThresholds[i]) break;
+						_text.Text += "[img=60x60]res://images/color_star.png[/img]";
+					}
+					//add empty stars
+					for (; i < StarThresholds.Length; i++)
+					{
+						_text.Text += "[img=60x60]res://images/star_empty.png[/img]";
+					}
+					_text.Show();
+				}
 				totalAccumulatedScore += _earnedPoints;
 			}
 		}else if (state == "judging_finished")
@@ -227,27 +222,9 @@ public partial class MainScene : Node2D
 		}
 	}
 
-	void updateText(int score)
-	{
-		_text.Text = "Score: [color=green]" + score + "\n";
-		{
-			int i = 0;
-			for(; i<StarThresholds.Length; i++)
-			{
-				if (score < StarThresholds[i]) break;
-				_text.Text += "[img=60x60]res://images/color_star.png[/img]";
-			}
-			//add empty stars
-			for (; i < StarThresholds.Length; i++)
-			{
-				_text.Text += "[img=60x60]res://images/star_empty.png[/img]";
-			}
-			_text.Show();
-		}
-	}
-
 	void init()
 	{
+		_text.Hide();
 		foreach (Sprite2D sprite in _sprites)
 		{
 			sprite.QueueFree();
@@ -261,11 +238,11 @@ public partial class MainScene : Node2D
 		{
 			if (child.Name.ToString().StartsWith('_'))
 			{
+				GD.Print("Removing child: " + child.Name);
 				child.QueueFree();
 			}
 		}
 		_sprites.Clear();
-		_sprite.SetPosition(Vector2.Zero);
 		_drawnSprites.Clear();
 		_sprite.Show();
 		_follower.ProgressRatio = 0;
