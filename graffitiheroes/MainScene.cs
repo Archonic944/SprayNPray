@@ -13,6 +13,7 @@ public partial class MainScene : Node2D
 	private Sprite2D _sprite;
 	private Path2D _path;
 	private RichTextLabel _text;
+	private double _lastTextUpdate; // Added for text update timing
 
 	private Random random = new();
 	private string[] curves;
@@ -80,8 +81,12 @@ public partial class MainScene : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		if (_elapsed == 0)
+		{
+			_elapsed += delta;
+			return; //we chuck the first frame because uhh umm uhh yeah huh right well yep
+		}
 		_elapsed += delta;
-		if (_elapsed == 0) return; //we chuck the first frame because uhh umm uhh yeah huh right well yep
 		if (state == "drawing")
 		{
 			Console.WriteLine("drawing");
@@ -183,26 +188,20 @@ public partial class MainScene : Node2D
 				}
 				Console.WriteLine("Score is now " + _earnedPoints);
 			}
+			
+			// Update text every 0.1 seconds
+			if (_elapsed - _lastTextUpdate >= 0.1)
+			{
+				UpdateText(_earnedPoints);
+				_lastTextUpdate = _elapsed;
+			}
 
 			if (_follower.ProgressRatio + _judgePathStep > 1)
 			{
 				state = "judging_finished";
 				Console.Write("Finished judging in " + (_elapsed - _lastUpdated) + "s. Score is "  + _earnedPoints);
-				_text.Text = "Score: [color=green]" + _earnedPoints + "\n";
-				{
-					int i = 0;
-					for(; i<StarThresholds.Length; i++)
-					{
-						if (_earnedPoints < StarThresholds[i]) break;
-						_text.Text += "[img=60x60]res://images/color_star.png[/img]";
-					}
-					//add empty stars
-					for (; i < StarThresholds.Length; i++)
-					{
-						_text.Text += "[img=60x60]res://images/star_empty.png[/img]";
-					}
-					_text.Show();
-				}
+				// Use UpdateText function here instead of duplicating code
+				UpdateText(_earnedPoints);
 				totalAccumulatedScore += _earnedPoints;
 			}
 		}else if (state == "judging_finished")
@@ -220,6 +219,24 @@ public partial class MainScene : Node2D
 				}
 			}
 		}
+	}
+
+	void UpdateText(float score)
+	{
+		_text.Text = "Score: [color=green]" + score + "[/color]\n";
+		
+		int i = 0;
+		for(; i<StarThresholds.Length; i++)
+		{
+			if (score < StarThresholds[i]) break;
+			_text.Text += "[img=60x60]res://images/color_star.png[/img]";
+		}
+		//add empty stars
+		for (; i < StarThresholds.Length; i++)
+		{
+			_text.Text += "[img=60x60]res://images/star_empty.png[/img]";
+		}
+		_text.Show();
 	}
 
 	void init()
