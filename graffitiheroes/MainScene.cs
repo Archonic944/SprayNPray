@@ -114,9 +114,15 @@ public partial class MainScene : Node2D
 		}
 		else if (state == "drawing_finished")
 		{
-			_finishTimer += delta;
-			if (_finishTimer >= _finishWaitTime)
+			// Show instruction text
+			_text.Text = "Press SPACE to start drawing";
+			_text.Show();
+			
+			// Wait for player to press a button instead of using a timer
+			if (Input.IsActionJustPressed("ui_accept"))
 			{
+				_text.Hide(); // Hide the instruction text
+				
 				Tween t = CreateTween();
 				t.SetParallel();
 				foreach (Sprite2D sprite in _sprites)
@@ -125,7 +131,7 @@ public partial class MainScene : Node2D
 					t.TweenProperty(sprite, "modulate", Colors.Transparent, 1.0f);
 				}
 
-				t.TweenCallback(Callable.From(() => state = "player")).SetDelay(1f);
+				// Transition directly to player state
 				state = "player";
 			}
 		}
@@ -260,6 +266,7 @@ public partial class MainScene : Node2D
 			}
 		}
 		_sprites.Clear();
+		_sprite.Position = Vector2.Zero;
 		_drawnSprites.Clear();
 		_sprite.Show();
 		_follower.ProgressRatio = 0;

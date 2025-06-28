@@ -1,0 +1,68 @@
+[gd_scene load_steps=6 format=3 uid="uid://c5qnjfd2w8het"]
+
+[ext_resource type="Script" uid="uid://oo0d2ytmevo" path="res://TitleScreen.cs" id="1_v6p8y"]
+
+[sub_resource type="Gradient" id="Gradient_1s85s"]
+offsets = PackedFloat32Array(0, 0.315881, 0.844677, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.315881, 0.315881, 0.315881, 1, 0.877199, 0.707714, 0.767992, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_v6p8y"]
+noise_type = 2
+frequency = 0.0092
+offset = Vector3(318.41, 0, 89.11)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ak2if"]
+seamless = true
+seamless_blend_skirt = 0.53
+as_normal_map = true
+bump_strength = 15.2
+color_ramp = SubResource("Gradient_1s85s")
+noise = SubResource("FastNoiseLite_v6p8y")
+
+[sub_resource type="SystemFont" id="SystemFont_1s85s"]
+font_names = PackedStringArray("Chalkduster")
+
+[node name="TitleScreen" type="Node2D"]
+script = ExtResource("1_v6p8y")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2.33398, 1.30469)
+texture = SubResource("NoiseTexture2D_ak2if")
+centered = false
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="Control"]
+layout_mode = 0
+offset_left = 301.0
+offset_top = 232.0
+offset_right = 909.0
+offset_bottom = 274.0
+theme_override_font_sizes/normal_font_size = 30
+text = "Copy the graffiti as accurately as possible!"
+fit_content = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control"]
+layout_mode = 0
+offset_left = 415.0
+offset_top = 31.0
+offset_right = 793.0
+offset_bottom = 307.0
+theme_override_fonts/normal_font = SubResource("SystemFont_1s85s")
+theme_override_font_sizes/normal_font_size = 60
+text = "GRAFFITI BATTLE"
+scroll_active = false
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 392.0
+offset_top = 361.0
+offset_right = 816.0
+offset_bottom = 509.0
+theme_override_font_sizes/font_size = 50
+text = "START"

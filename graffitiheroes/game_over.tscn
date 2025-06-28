@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=3 uid="uid://dno15awm1dq6l"]
+
+[sub_resource type="Gradient" id="Gradient_xapjj"]
+offsets = PackedFloat32Array(0, 0.853403, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.772943, 0.618189, 0.523054, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_y26ei"]
+frequency = 0.0024
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_yxx3c"]
+invert = true
+normalize = false
+color_ramp = SubResource("Gradient_xapjj")
+noise = SubResource("FastNoiseLite_y26ei")
+
+[sub_resource type="SystemFont" id="SystemFont_ccer4"]
+font_names = PackedStringArray("Chalkduster")
+
+[node name="GameOver" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(583.5, 331.5)
+scale = Vector2(2.31055, 1.32227)
+texture = SubResource("NoiseTexture2D_yxx3c")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control"]
+layout_mode = 0
+offset_left = 414.0
+offset_top = 123.0
+offset_right = 788.0
+offset_bottom = 276.0
+theme_override_fonts/normal_font = SubResource("SystemFont_ccer4")
+theme_override_font_sizes/normal_font_size = 50
+text = "GAME OVER!"
+fit_content = true
+
+[node name="Score Text" type="RichTextLabel" parent="Control"]
+layout_mode = 0
+offset_left = 454.0
+offset_top = 203.0
+offset_right = 747.0
+offset_bottom = 342.0
+theme_override_font_sizes/normal_font_size = 30
+text = "Your score: 
+Stars collected: "
+
+[node name="Button" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 438.0
+offset_top = 458.0
+offset_right = 737.0
+offset_bottom = 535.0
+scale = Vector2(0.905894, 1.02115)
+theme_override_font_sizes/font_size = 50
+text = "PLAY AGAIN"
