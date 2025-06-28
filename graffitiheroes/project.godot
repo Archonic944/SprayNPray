@@ -11,9 +11,14 @@ config_version=5
 [application]
 
 config/name="GraffitiHeroes"
-run/main_scene="res://main_scene.tscn"
+run/main_scene="uid://c5qnjfd2w8het"
 config/features=PackedStringArray("4.4", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/mode=3
+window/stretch/mode="canvas_items"
 
 [dotnet]
 
