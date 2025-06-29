@@ -42,7 +42,7 @@ script = ExtResource("1_0f027")
 [node name="hitbox" type="Area2D" parent="."]
 position = Vector2(344, 160)
 rotation = 0.176353
-scale = Vector2(0.25, 0.25)
+scale = Vector2(0.239807, 0.250054)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox"]
 shape = SubResource("CircleShape2D_nfk4m")
@@ -60,6 +60,7 @@ autoplay = "default"
 frame_progress = 0.153566
 
 [node name="Area2D" type="Area2D" parent="canvas"]
+scale = Vector2(0.939534, 0.935642)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="canvas/Area2D"]
 position = Vector2(-1.51166, -0.804382)
