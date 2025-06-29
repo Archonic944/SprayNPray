@@ -13,7 +13,6 @@ config_version=5
 config/name="GraffitiHeroes"
 run/main_scene="uid://dh0qak1gbh2f8"
 config/features=PackedStringArray("4.4", "C#", "GL Compatibility")
-config/icon="res://icon.svg"
 
 [display]
 
@@ -32,3 +31,5 @@ enabled=PackedStringArray("res://addons/godot_super-wakatime/plugin.cfg")
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_s3tc_bptc=true
+textures/vram_compression/import_etc2_astc=true
