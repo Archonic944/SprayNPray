@@ -7,13 +7,13 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_q0f0l"]
 shader = ExtResource("1_cdtvd")
-shader_parameter/water_color_1 = Color(1, 0.34117648, 0, 0.6862745)
-shader_parameter/water_color_2 = Color(1, 0, 0, 0.6862745)
-shader_parameter/water_level_percentage = 0.5000000237500001
-shader_parameter/wave_frequency_1 = 2.0000000475000004
-shader_parameter/wave_amplitude_1 = 0.050000002375000005
-shader_parameter/wave_frequency_2 = 2.0000000475000004
-shader_parameter/wave_amplitude_2 = 0.050000002375000005
+shader_parameter/water_color_1 = Color(1, 0.341176, 0, 0.686275)
+shader_parameter/water_color_2 = Color(1, 0, 0, 0.686275)
+shader_parameter/water_level_percentage = 0.496
+shader_parameter/wave_frequency_1 = 2.0
+shader_parameter/wave_amplitude_1 = 0.05
+shader_parameter/wave_frequency_2 = 2.0
+shader_parameter/wave_amplitude_2 = 0.05
 
 [sub_resource type="Animation" id="Animation_q0f0l"]
 resource_name = "Frames"

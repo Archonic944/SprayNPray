@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://brybxvayvwql5"
-path="res://.godot/imported/Can_1.png-e704951dd75664ac276afb517288ca2c.ctex"
+uid="uid://cd2pj3l5t21hr"
+path="res://.godot/imported/city_alleyway.png-660f4c02d683ff4629e38af08e92b289.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/Can_UI/Can_1.png"
-dest_files=["res://.godot/imported/Can_1.png-e704951dd75664ac276afb517288ca2c.ctex"]
+source_file="res://images/city_alleyway.png"
+dest_files=["res://.godot/imported/city_alleyway.png-660f4c02d683ff4629e38af08e92b289.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bm8w8v6aadc8b"
-path="res://.godot/imported/Can_2.png-d20048bf14a753d752c756a4064621fd.ctex"
+path="res://.godot/imported/Can_2.png-524de4e8d5e5e651c16dce67a7c4318e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/Can_UI/Can_2.png"
-dest_files=["res://.godot/imported/Can_2.png-d20048bf14a753d752c756a4064621fd.ctex"]
+source_file="res://Can_UI/Can_2.png"
+dest_files=["res://.godot/imported/Can_2.png-524de4e8d5e5e651c16dce67a7c4318e.ctex"]
 
 [params]
 

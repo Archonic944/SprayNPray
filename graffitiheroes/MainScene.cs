@@ -13,6 +13,8 @@ public partial class MainScene : Node2D
 	private Sprite2D _sprite;
 	private Path2D _path;
 	private RichTextLabel _text;
+	private Area2D _canvas;
+	private Area2D _mouseArea; //is always at the mouse position
 	private double _lastTextUpdate; // Added for text update timing
 
 	private Random random = new();
@@ -28,6 +30,8 @@ public partial class MainScene : Node2D
 		_sprite = GetNode<Sprite2D>("Path2D/PathFollow2D/Sprite2D");
 		_path = GetNode<Path2D>("Path2D");
 		_text = GetNode<RichTextLabel>("Control/RichTextLabel");
+		_canvas = GetNode<Area2D>("canvas/Area2D");
+		_mouseArea = GetNode<Area2D>("hitbox");
 		init();
 		//get all curve resource names
 		curves = ResourceLoader.ListDirectory("res://curves/");
@@ -140,11 +144,14 @@ public partial class MainScene : Node2D
 			_sprite.GlobalPosition = GetGlobalMousePosition();
 			if (_elapsed - _lastUpdated > DrawRate && Input.IsMouseButtonPressed(MouseButton.Left))
 			{
-				var dot = (Sprite2D)_sprite.Duplicate();
-				dot.GlobalPosition = GetGlobalMousePosition();
-				AddChild(dot);
-				_drawnSprites.Add(dot);
-				_lastUpdated = _elapsed;
+				if (_canvas.GetOverlappingAreas().Count >= 1)
+				{
+					var dot = (Sprite2D)_sprite.Duplicate();
+					dot.GlobalPosition = GetGlobalMousePosition();
+					AddChild(dot);
+					_drawnSprites.Add(dot);
+					_lastUpdated = _elapsed;
+				}
 			}
 
 			if (Input.IsActionJustPressed("ui_accept"))
@@ -274,5 +281,10 @@ public partial class MainScene : Node2D
 		_elapsed = 0;
 		state = "drawing";
 		_earnedPoints = 0;
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		_mouseArea.GlobalPosition = GetGlobalMousePosition();
 	}
 }
