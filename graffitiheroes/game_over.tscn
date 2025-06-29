@@ -1,4 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://dno15awm1dq6l"]
+[gd_scene load_steps=6 format=3 uid="uid://dno15awm1dq6l"]
+
+[ext_resource type="Script" uid="uid://bosanpjpj1kyy" path="res://GameOver.cs" id="1_y26ei"]
 
 [sub_resource type="Gradient" id="Gradient_xapjj"]
 offsets = PackedFloat32Array(0, 0.853403, 1)
@@ -17,6 +19,7 @@ noise = SubResource("FastNoiseLite_y26ei")
 font_names = PackedStringArray("Chalkduster")
 
 [node name="GameOver" type="Node2D"]
+script = ExtResource("1_y26ei")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(583.5, 331.5)
@@ -42,11 +45,12 @@ fit_content = true
 
 [node name="Score Text" type="RichTextLabel" parent="Control"]
 layout_mode = 0
-offset_left = 454.0
-offset_top = 203.0
-offset_right = 747.0
-offset_bottom = 342.0
+offset_left = 448.0
+offset_top = 212.0
+offset_right = 741.0
+offset_bottom = 351.0
 theme_override_font_sizes/normal_font_size = 30
+bbcode_enabled = true
 text = "Your score: 
 Stars collected: "
 

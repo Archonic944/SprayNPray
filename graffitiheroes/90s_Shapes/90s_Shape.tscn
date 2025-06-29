@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://corrioilhierh"]
+
+[ext_resource type="Script" uid="uid://bemc3oyf7h53u" path="res://90s_Shapes/90sShape.gd" id="1_7t6lv"]
+[ext_resource type="Texture2D" uid="uid://rd5x3kiqavsq" path="res://90s_Shapes/Shape_4.png" id="1_oaxbj"]
+
+[node name="90sShape" type="Sprite2D"]
+z_index = 1
+texture = ExtResource("1_oaxbj")
+script = ExtResource("1_7t6lv")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 0.44313726)
+top_level = true
+texture = ExtResource("1_oaxbj")

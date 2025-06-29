@@ -1,0 +1,74 @@
+[gd_scene load_steps=9 format=3 uid="uid://bbff0bya7ueyk"]
+
+[ext_resource type="Shader" uid="uid://bkrh4er6b10w4" path="res://Can_UI/Spray_Can.gdshader" id="1_cdtvd"]
+[ext_resource type="Texture2D" uid="uid://brybxvayvwql5" path="res://Can_UI/Can_1.png" id="1_gus0k"]
+[ext_resource type="Texture2D" uid="uid://bm8w8v6aadc8b" path="res://Can_UI/Can_2.png" id="2_erdxk"]
+[ext_resource type="Texture2D" uid="uid://crqiruj5gfyux" path="res://Can_UI/Can_3.png" id="3_cdtvd"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q0f0l"]
+shader = ExtResource("1_cdtvd")
+shader_parameter/water_color_1 = Color(1, 0.34117648, 0, 0.6862745)
+shader_parameter/water_color_2 = Color(1, 0, 0, 0.6862745)
+shader_parameter/water_level_percentage = 0.5000000237500001
+shader_parameter/wave_frequency_1 = 2.0000000475000004
+shader_parameter/wave_amplitude_1 = 0.050000002375000005
+shader_parameter/wave_frequency_2 = 2.0000000475000004
+shader_parameter/wave_amplitude_2 = 0.050000002375000005
+
+[sub_resource type="Animation" id="Animation_q0f0l"]
+resource_name = "Frames"
+length = 0.8
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("1_gus0k"), ExtResource("2_erdxk"), ExtResource("3_cdtvd")]
+}
+
+[sub_resource type="Animation" id="Animation_w44lr"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("1_gus0k")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_u8f6n"]
+_data = {
+&"Frames": SubResource("Animation_q0f0l"),
+&"RESET": SubResource("Animation_w44lr")
+}
+
+[node name="Spray_Can" type="TextureRect"]
+material = SubResource("ShaderMaterial_q0f0l")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -909.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.8, 0.8)
+pivot_offset = Vector2(121.5, 324)
+texture = ExtResource("1_gus0k")
+stretch_mode = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_u8f6n")
+}
+autoplay = "Frames"
