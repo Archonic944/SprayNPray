@@ -1,34 +1,32 @@
 using Godot;
 using System;
-using System.Net.Mime;
 
-public partial class GameOver : Node2D
+public partial class GameOver : Control
 {
-	private Button _restartButton;
+	private int totalScore;
+	private int totalEarnedStars;
+	private int potentialStars;
+	
+	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		_restartButton = GetNode<Button>("Control/Button");
-		_restartButton.Pressed += OnRestartButtonPressed;
-		
+		GetNode<GraffitiButton>("GraffitiButton").addPressedListener(() =>
+		{
+			GetTree().ChangeSceneToFile("res://main_scene.tscn");
+		});
+		GetNode<RichTextLabel>("ScoreText").Text = $"Total Score: {(int)totalScore}\nStars: {totalEarnedStars}/{potentialStars}";
 	}
 
-	private void OnRestartButtonPressed()
+	public void Initialize(float score, int totalEarnedStars, int potentialStars)
 	{
-		GD.Print("Restarting game...");
-		GetTree().ChangeSceneToFile("res://main_scene.tscn");
-		GD.Print("Game state reset.");
+		this.totalEarnedStars = totalEarnedStars;
+		this.potentialStars = potentialStars;
+		this.totalScore = (int)score;
+		GetNode<RichTextLabel>("ScoreText").Text = $"Total Score: {(int)totalScore}\nStars: {totalEarnedStars}/{potentialStars}";
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-	}
-
-	public void Initialize(float finalScore, int earnedStars, int potentialStars)
-	{
-		RichTextLabel text = GetNode<RichTextLabel>("Control/RichTextLabel");
-		text.Text = "Your Score: [color=green]" + (int)Math.Round(finalScore) + "[/color]\n" +
-		            "Stars Collected: [color=yellow]" + earnedStars + "[/color] / [color=yellow]" + potentialStars +
-		            "[/color]";
 	}
 }

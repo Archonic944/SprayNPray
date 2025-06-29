@@ -1,12 +1,12 @@
-[gd_scene load_steps=15 format=3 uid="uid://do4qt0ofr6co3"]
+[gd_scene load_steps=16 format=3 uid="uid://do4qt0ofr6co3"]
 
 [ext_resource type="Script" uid="uid://bjdj4x68n5xv1" path="res://MainScene.cs" id="1_0f027"]
 [ext_resource type="Texture2D" uid="uid://m35oqslxbrl7" path="res://images/graffiti.png" id="2_2c62f"]
-[ext_resource type="Curve2D" uid="uid://cyafotb25dog" path="res://curves/curvy_w.tres" id="2_gyfs4"]
 [ext_resource type="Texture2D" uid="uid://cvt106bdgqu5k" path="res://Backgrounds/Brick_1.png" id="2_hq1ik"]
 [ext_resource type="Texture2D" uid="uid://cd2pj3l5t21hr" path="res://images/city_alleyway.png" id="2_nfk4m"]
 [ext_resource type="Texture2D" uid="uid://cfg41allywxjb" path="res://Backgrounds/Brick_2.png" id="3_nfk4m"]
 [ext_resource type="Texture2D" uid="uid://cyjcipme504jo" path="res://Backgrounds/Brick_3.png" id="4_66tet"]
+[ext_resource type="Curve2D" uid="uid://fg4pnm7af0sr" path="res://curves/hard/eye.tres" id="6_66tet"]
 [ext_resource type="PackedScene" uid="uid://bbff0bya7ueyk" path="res://Can_UI/Spray_Can_UI.tscn" id="8_66tet"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_nfk4m"]
@@ -43,6 +43,9 @@ oversampling = 2.0
 [sub_resource type="SystemFont" id="SystemFont_66tet"]
 font_names = PackedStringArray("Chalkduster")
 
+[sub_resource type="SystemFont" id="SystemFont_7ycvg"]
+font_names = PackedStringArray("Chalkduster")
+
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_0f027")
 
@@ -75,11 +78,11 @@ shape = SubResource("RectangleShape2D_hq1ik")
 
 [node name="Path2D" type="Path2D" parent="."]
 z_index = 1
-curve = ExtResource("2_gyfs4")
+curve = ExtResource("6_66tet")
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Path2D"]
-position = Vector2(344, 160)
-rotation = 0.176353
+position = Vector2(366, 284)
+rotation = -0.315729
 
 [node name="Sprite2D" type="Sprite2D" parent="Path2D/PathFollow2D"]
 scale = Vector2(0.25, 0.25)
@@ -135,4 +138,15 @@ offset_bottom = 489.75
 theme_override_fonts/normal_font = SubResource("SystemFont_66tet")
 theme_override_font_sizes/normal_font_size = 30
 text = "No more ink!"
+fit_content = true
+
+[node name="RoundLabel" type="RichTextLabel" parent="."]
+offset_left = 14.0
+offset_top = 13.0
+offset_right = 273.0
+offset_bottom = 111.0
+theme_override_fonts/normal_font = SubResource("SystemFont_7ycvg")
+theme_override_font_sizes/normal_font_size = 35
+text = "Round 1/7
+Easy"
 fit_content = true

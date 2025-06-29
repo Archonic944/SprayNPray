@@ -20,7 +20,9 @@ public partial class MainScene : Node2D
 
 	private Random random = new();
 	private string[] curves;
-	private HashSet<string> unusedCurves;
+	private HashSet<string> unusedEasy = [];
+	private HashSet<string> unusedMedium = [];
+	private HashSet<string> unusedHard = [];
 
 	public static readonly int[] StarThresholds = { 540, 625, 680, 740, 800 };
 
@@ -48,33 +50,36 @@ public partial class MainScene : Node2D
 		init();
 		tweenSprayCan();
 		//get all curve resource names
-		curves = ResourceLoader.ListDirectory("res://curves/");
-		unusedCurves = new HashSet<string>(curves);
+		unusedEasy = new HashSet<string>(ResourceLoader.ListDirectory("res://curves/easy"));
+		unusedMedium = new HashSet<string>(ResourceLoader.ListDirectory("res://curves/medium"));
+		unusedHard = new HashSet<string>(ResourceLoader.ListDirectory("res://curves/hard"));
 		//random curve
-		if (unusedCurves.Count > 0)
-		{
-			var randomCurve = unusedCurves.ElementAt(random.Next(unusedCurves.Count));
-			SetCurve(randomCurve);
-		}
-		else
-		{
-			throw new Exception("No curves available to use.");
-		}
+		NextCurve();
 	}
 
-	void SetCurve(string curve)
+	void NextCurve()
 	{
-		if (!unusedCurves.Remove(curve))
+		currentRound++;
+		if (currentRound <= 4)// Easy
 		{
-			//crash game
-			throw new Exception("Curve " + curve + " is already used or does not exist.");
-		}
-		Curve2D curve2d = ResourceLoader.Load<Curve2D>("res://curves/" + curve);
-		if (curve2d == null)
+			string curveName = unusedEasy.ElementAt(random.Next(unusedEasy.Count));
+			unusedEasy.Remove(curveName);
+			_path.Curve = ResourceLoader.Load<Curve2D>("res://curves/easy/" + curveName);
+			GetNode<RichTextLabel>("RoundLabel").Text = "Round " + currentRound + "/7\nEasy";
+		}else if (currentRound <= 6) // Medium
 		{
-			throw new Exception("Curve " + curve + " does not exist.");
+			string curveName = unusedMedium.ElementAt(random.Next(unusedMedium.Count));
+			unusedMedium.Remove(curveName);
+			_path.Curve = ResourceLoader.Load<Curve2D>("res://curves/medium/" + curveName);
+			GetNode<RichTextLabel>("RoundLabel").Text = "Round " + currentRound + "/7\nMedium";
 		}
-		_path.Curve = curve2d;
+		else // Hard
+		{
+			string curveName = unusedHard.ElementAt(random.Next(unusedHard.Count));
+			unusedHard.Remove(curveName);
+			_path.Curve = ResourceLoader.Load<Curve2D>("res://curves/hard/" + curveName);
+			GetNode<RichTextLabel>("RoundLabel").Text = "Round " + currentRound + "/7\nHard";
+		}
 	}
 
 	public double totalAccumulatedScore = 0;  
@@ -90,6 +95,10 @@ public partial class MainScene : Node2D
 	private double _finishTimer;
 	private int inkLeft = 1;
 	private int inkStartedWith = 1;
+	private int totalEarnedStars = 0;
+	private int potentialStars = 0;
+	private int potentialPoints = 0;
+	private int currentRound = 0;
 	private HashSet<Area2D> _currentOverlaps = [];
 	
 
@@ -143,7 +152,7 @@ public partial class MainScene : Node2D
 				}
 				//calculate how much ink the player needs based on the curve length
 				float curveLength = _path.Curve.GetBakedLength();
-				float inkNeeded = curveLength / 12; // 10 pixels per ink unit
+				float inkNeeded = curveLength / 7.5f; // 10 pixels per ink unit
 				inkLeft = (int) Math.Ceiling(inkNeeded);
 				inkStartedWith = (int) Math.Ceiling(inkNeeded);
 				foreach (Sprite2D sprite in _sprites)
@@ -158,7 +167,7 @@ public partial class MainScene : Node2D
 		{
 			if (inkLeft <= 0) GetNode<RichTextLabel>("Spray_Can/NoMoreInk").Show();
 			_sprite.GlobalPosition = GetGlobalMousePosition();
-			if (_elapsed - _lastUpdated > DrawRate && Input.IsMouseButtonPressed(MouseButton.Left))
+			if (Input.IsMouseButtonPressed(MouseButton.Left))
 			{
 				if (_canvas.GetOverlappingAreas().Count >= 1 && _currentOverlaps.Count == 0)
 				{
@@ -245,36 +254,60 @@ public partial class MainScene : Node2D
 				UpdateText(_earnedPoints);
 				_text.Text += "\nPress SPACE to continue";
 				totalAccumulatedScore += _earnedPoints;
+				totalEarnedStars += GetEarnedStars(_earnedPoints);
+				potentialPoints += (int) _possiblePoints;
+				potentialStars += StarThresholds.Length;
 			}
 		}else if (state == "judging_finished")
 		{
 			if (Input.IsActionJustPressed("ui_accept"))
 			{
-				if (unusedCurves.Count == 0)
+				if (currentRound == 7) // Max rounds: 7
 				{
 					GD.Print("Game finished");
+					PackedScene gameOverScene = ResourceLoader.Load<PackedScene>("res://game_over.tscn");
+					GameOver scene = gameOverScene.Instantiate<GameOver>();
+					scene.Initialize((float) totalAccumulatedScore, totalEarnedStars, potentialStars);
+					GetTree().Root.AddChild(scene);
+					GetTree().CurrentScene.QueueFree();
+					GetTree().CurrentScene = scene;
 				}
 				else
 				{
-					SetCurve(unusedCurves.ElementAt(random.Next(unusedCurves.Count)));
+					NextCurve();
 					init();
 				}
 			}
 		}
 	}
 
+	int GetEarnedStars(float score)
+	{
+		int stars = 0;
+		for (int i = 0; i < StarThresholds.Length; i++)
+		{
+			if (score >= StarThresholds[i])
+			{
+				stars++;
+			}
+			else
+			{
+				break;
+			}
+		}
+		return stars;
+	}
+
 	void UpdateText(float score)
 	{
 		_text.Text = "Score: [color=green]" + (int) Math.Round(score) + "[/color]\n";
-		
-		int i = 0;
-		for(; i<StarThresholds.Length; i++)
+		int earnedStars = GetEarnedStars(score);
+		for(int i= 0; i<earnedStars; i++)
 		{
-			if (score < StarThresholds[i]) break;
 			_text.Text += "[img=60x60]res://images/color_star.png[/img]";
 		}
 		//add empty stars
-		for (; i < StarThresholds.Length; i++)
+		for (int i = earnedStars; i < StarThresholds.Length; i++)
 		{
 			_text.Text += "[img=60x60]res://images/star_empty.png[/img]";
 		}

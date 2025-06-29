@@ -1,65 +1,137 @@
-[gd_scene load_steps=6 format=3 uid="uid://dno15awm1dq6l"]
+[gd_scene load_steps=12 format=3 uid="uid://dno15awm1dq6l"]
 
-[ext_resource type="Script" uid="uid://bosanpjpj1kyy" path="res://GameOver.cs" id="1_y26ei"]
+[ext_resource type="Script" uid="uid://csxwudt3h84io" path="res://GameOver.cs" id="1_y26ei"]
+[ext_resource type="Texture2D" uid="uid://cvt106bdgqu5k" path="res://Backgrounds/Brick_1.png" id="2_k2vha"]
+[ext_resource type="Texture2D" uid="uid://cfg41allywxjb" path="res://Backgrounds/Brick_2.png" id="3_fkf4o"]
+[ext_resource type="Texture2D" uid="uid://cyjcipme504jo" path="res://Backgrounds/Brick_3.png" id="4_3u7xm"]
+[ext_resource type="PackedScene" uid="uid://corrioilhierh" path="res://90s_Shapes/90s_Shape.tscn" id="5_woa3c"]
+[ext_resource type="PackedScene" uid="uid://dp3x2br8vlp0b" path="res://graffiti_button.tscn" id="6_dd2jf"]
+[ext_resource type="FontFile" uid="uid://djhsaha502kn3" path="res://Dripping_Marker_Font.ttf" id="7_ku74v"]
 
-[sub_resource type="Gradient" id="Gradient_xapjj"]
-offsets = PackedFloat32Array(0, 0.853403, 1)
-colors = PackedColorArray(0, 0, 0, 1, 0.772943, 0.618189, 0.523054, 1, 1, 1, 1, 1)
+[sub_resource type="Animation" id="Animation_e8qc1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_k2vha")]
+}
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_y26ei"]
-frequency = 0.0024
+[sub_resource type="Animation" id="Animation_ti4w6"]
+resource_name = "new_animation"
+length = 0.6
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("2_k2vha"), ExtResource("3_fkf4o"), ExtResource("4_3u7xm")]
+}
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_yxx3c"]
-invert = true
-normalize = false
-color_ramp = SubResource("Gradient_xapjj")
-noise = SubResource("FastNoiseLite_y26ei")
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_xyp27"]
+_data = {
+&"RESET": SubResource("Animation_e8qc1"),
+&"new_animation": SubResource("Animation_ti4w6")
+}
 
-[sub_resource type="SystemFont" id="SystemFont_ccer4"]
+[sub_resource type="SystemFont" id="SystemFont_nm4t2"]
 font_names = PackedStringArray("Chalkduster")
 
-[node name="GameOver" type="Node2D"]
+[node name="GameOver" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
 script = ExtResource("1_y26ei")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(583.5, 331.5)
-scale = Vector2(2.31055, 1.32227)
-texture = SubResource("NoiseTexture2D_yxx3c")
+[node name="Background" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_k2vha")
+expand_mode = 2
+stretch_mode = 1
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Background"]
+libraries = {
+&"": SubResource("AnimationLibrary_xyp27")
+}
+autoplay = "new_animation"
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Control"]
+[node name="90sShape" parent="." instance=ExtResource("5_woa3c")]
+position = Vector2(204, 561)
+rotation_speed = -0.01
+
+[node name="90sShape2" parent="." instance=ExtResource("5_woa3c")]
+position = Vector2(865, 91)
+rotation_speed = -0.005
+
+[node name="90sShape3" parent="." instance=ExtResource("5_woa3c")]
+position = Vector2(1040, 584)
+rotation_speed = -0.03
+
+[node name="90sShape4" parent="." instance=ExtResource("5_woa3c")]
+position = Vector2(128, 75)
+rotation_speed = 0.03
+
+[node name="90sShape5" parent="." instance=ExtResource("5_woa3c")]
+position = Vector2(557, 111)
+rotation_speed = 0.005
+
+[node name="90sShape7" parent="." instance=ExtResource("5_woa3c")]
+position = Vector2(105, 394)
+rotation_speed = -0.01
+
+[node name="90sShape8" parent="." instance=ExtResource("5_woa3c")]
+position = Vector2(1035, 237)
+
+[node name="GraffitiButton" parent="." instance=ExtResource("6_dd2jf")]
+position = Vector2(581, 536)
+scale = Vector2(0.679999, 0.679999)
+Text = "PLAY AGAIN"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 0
-offset_left = 414.0
-offset_top = 123.0
-offset_right = 788.0
-offset_bottom = 276.0
-theme_override_fonts/normal_font = SubResource("SystemFont_ccer4")
-theme_override_font_sizes/normal_font_size = 50
-text = "GAME OVER!"
-fit_content = true
+offset_left = 353.0
+offset_top = 182.0
+offset_right = 786.0
+offset_bottom = 435.0
+theme_override_colors/default_color = Color(1.54018e-06, 0.652349, 0.91626, 1)
+theme_override_fonts/normal_font = ExtResource("7_ku74v")
+theme_override_font_sizes/normal_font_size = 100
+text = "GAME OVER"
+horizontal_alignment = 1
 
-[node name="Score Text" type="RichTextLabel" parent="Control"]
+[node name="ScoreText" type="RichTextLabel" parent="."]
 layout_mode = 0
-offset_left = 448.0
-offset_top = 212.0
-offset_right = 741.0
-offset_bottom = 351.0
-theme_override_font_sizes/normal_font_size = 30
-bbcode_enabled = true
-text = "Your score: 
-Stars collected: "
-
-[node name="Button" type="Button" parent="Control"]
-layout_mode = 0
-offset_left = 438.0
-offset_top = 458.0
-offset_right = 737.0
-offset_bottom = 535.0
-scale = Vector2(0.905894, 1.02115)
-theme_override_font_sizes/font_size = 50
-text = "PLAY AGAIN"
+offset_left = 397.0
+offset_top = 303.0
+offset_right = 761.0
+offset_bottom = 414.0
+theme_override_fonts/normal_font = SubResource("SystemFont_nm4t2")
+theme_override_font_sizes/normal_font_size = 40
+text = "Score: x/x
+Stars: x/x"
+scroll_active = false
+horizontal_alignment = 1
