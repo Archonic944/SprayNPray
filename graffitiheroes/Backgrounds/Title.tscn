@@ -1,0 +1,121 @@
+[gd_scene load_steps=9 format=3 uid="uid://dh0qak1gbh2f8"]
+
+[ext_resource type="Texture2D" uid="uid://cvt106bdgqu5k" path="res://Backgrounds/Brick_1.png" id="2_yytgh"]
+[ext_resource type="Texture2D" uid="uid://cfg41allywxjb" path="res://Backgrounds/Brick_2.png" id="3_kpm8p"]
+[ext_resource type="Texture2D" uid="uid://cjpm7j2d5h0k" path="res://Backgrounds/Title.png" id="4_e4n62"]
+[ext_resource type="Texture2D" uid="uid://cyjcipme504jo" path="res://Backgrounds/Brick_3.png" id="4_rbgi3"]
+[ext_resource type="PackedScene" uid="uid://corrioilhierh" path="res://90s_Shapes/90s_Shape.tscn" id="5_rg4ux"]
+
+[sub_resource type="Animation" id="Animation_e8qc1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_yytgh")]
+}
+
+[sub_resource type="Animation" id="Animation_ti4w6"]
+resource_name = "new_animation"
+length = 0.6
+loop_mode = 1
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("2_yytgh"), ExtResource("3_kpm8p"), ExtResource("4_rbgi3")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_xyp27"]
+_data = {
+&"RESET": SubResource("Animation_e8qc1"),
+&"new_animation": SubResource("Animation_ti4w6")
+}
+
+[node name="Title" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+
+[node name="Background" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_yytgh")
+expand_mode = 2
+stretch_mode = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Background"]
+libraries = {
+&"": SubResource("AnimationLibrary_xyp27")
+}
+autoplay = "new_animation"
+
+[node name="Title" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_right = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 0.174533
+pivot_offset = Vector2(576, 324)
+texture = ExtResource("4_e4n62")
+expand_mode = 2
+stretch_mode = 3
+metadata/_edit_lock_ = true
+
+[node name="90sShape" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(204, 561)
+rotation_speed = -0.01
+
+[node name="90sShape2" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(865, 91)
+rotation_speed = -0.005
+
+[node name="90sShape3" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(1040, 584)
+rotation_speed = -0.03
+
+[node name="90sShape4" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(128, 75)
+rotation_speed = 0.03
+
+[node name="90sShape5" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(557, 111)
+rotation_speed = 0.005
+
+[node name="90sShape6" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(539, 542)
+rotation_speed = 0.01
+
+[node name="90sShape7" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(105, 394)
+rotation_speed = -0.01
+
+[node name="90sShape8" parent="." instance=ExtResource("5_rg4ux")]
+position = Vector2(1035, 237)
