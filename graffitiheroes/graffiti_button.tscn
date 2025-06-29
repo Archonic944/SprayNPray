@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://dp3x2br8vlp0b"]
+
+[ext_resource type="Script" uid="uid://bu2ta5ytvc63e" path="res://GraffitiButton.cs" id="1_1jsbl"]
+[ext_resource type="FontFile" uid="uid://djhsaha502kn3" path="res://Dripping_Marker_Font.ttf" id="2_2nufg"]
+[ext_resource type="Texture2D" uid="uid://c6dwdqnuenwtm" path="res://images/Button.png" id="3_dimnw"]
+[ext_resource type="Texture2D" uid="uid://cdt1fl4r5fsox" path="res://images/Button_Pressed.png" id="4_1xgcm"]
+
+[node name="GraffitiButton" type="Node2D"]
+script = ExtResource("1_1jsbl")
+Text = "TEXT"
+
+[node name="Button" type="Button" parent="."]
+offset_left = -138.0
+offset_top = -105.0
+offset_right = 131.0
+offset_bottom = 92.0
+theme_override_fonts/font = ExtResource("2_2nufg")
+theme_override_font_sizes/font_size = 80
+text = "PLAY AGAIN"
+autowrap_mode = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("3_dimnw")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("4_1xgcm")
