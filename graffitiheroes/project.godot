@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="GraffitiHeroes"
-run/main_scene="uid://c5qnjfd2w8het"
+run/main_scene="uid://dh0qak1gbh2f8"
 config/features=PackedStringArray("4.4", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 

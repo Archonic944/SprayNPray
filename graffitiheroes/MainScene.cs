@@ -139,7 +139,7 @@ public partial class MainScene : Node2D
 				t.SetParallel();
 				foreach (Sprite2D sprite in _sprites)
 				{
-					t.TweenProperty(sprite, "modulate", Colors.Transparent, 1.0f);
+					t.TweenProperty(sprite, "modulate", Colors.Transparent, 1.2f);
 				}
 				//calculate how much ink the player needs based on the curve length
 				float curveLength = _path.Curve.GetBakedLength();
@@ -156,7 +156,7 @@ public partial class MainScene : Node2D
 		}
 		else if (state == "player")
 		{
-			if (inkLeft <= 0) GetNode<Node2D>("Spray_Can/NoMoreInk").Show();
+			if (inkLeft <= 0) GetNode<RichTextLabel>("Spray_Can/NoMoreInk").Show();
 			_sprite.GlobalPosition = GetGlobalMousePosition();
 			if (_elapsed - _lastUpdated > DrawRate && Input.IsMouseButtonPressed(MouseButton.Left))
 			{
@@ -176,7 +176,7 @@ public partial class MainScene : Node2D
 
 			if (Input.IsActionJustPressed("ui_accept"))
 			{
-				GetNode<Node2D>("Spray_Can/NoMoreInk").Hide();
+				GetNode<RichTextLabel>("Spray_Can/NoMoreInk").Hide();
 				//begin judging
 				state = "judging";
 				_lastUpdated = _elapsed; 
@@ -243,6 +243,7 @@ public partial class MainScene : Node2D
 				Console.Write("Finished judging in " + (_elapsed - _lastUpdated) + "s. Score is "  + _earnedPoints);
 				// Use UpdateText function here instead of duplicating code
 				UpdateText(_earnedPoints);
+				_text.Text += "\nPress SPACE to continue";
 				totalAccumulatedScore += _earnedPoints;
 			}
 		}else if (state == "judging_finished")
