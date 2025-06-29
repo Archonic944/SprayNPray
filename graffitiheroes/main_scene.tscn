@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://do4qt0ofr6co3"]
+[gd_scene load_steps=15 format=3 uid="uid://do4qt0ofr6co3"]
 
 [ext_resource type="Script" uid="uid://bjdj4x68n5xv1" path="res://MainScene.cs" id="1_0f027"]
 [ext_resource type="Texture2D" uid="uid://m35oqslxbrl7" path="res://images/graffiti.png" id="2_2c62f"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cd2pj3l5t21hr" path="res://images/city_alleyway.png" id="2_nfk4m"]
 [ext_resource type="Texture2D" uid="uid://cfg41allywxjb" path="res://Backgrounds/Brick_2.png" id="3_nfk4m"]
 [ext_resource type="Texture2D" uid="uid://cyjcipme504jo" path="res://Backgrounds/Brick_3.png" id="4_66tet"]
+[ext_resource type="PackedScene" uid="uid://bbff0bya7ueyk" path="res://Can_UI/Spray_Can_UI.tscn" id="8_66tet"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_nfk4m"]
 radius = 74.7262
@@ -31,10 +32,16 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hq1ik"]
 size = Vector2(864.668, 899.397)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_66tet"]
+radius = 36.0
+
 [sub_resource type="SystemFont" id="SystemFont_gyfs4"]
 font_names = PackedStringArray("Chalkduster")
 generate_mipmaps = true
 oversampling = 2.0
+
+[sub_resource type="SystemFont" id="SystemFont_66tet"]
+font_names = PackedStringArray("Chalkduster")
 
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_0f027")
@@ -78,6 +85,14 @@ rotation = 0.176353
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_2c62f")
 
+[node name="OverlapArea" type="Area2D" parent="Path2D/PathFollow2D/Sprite2D"]
+scale = Vector2(0.563189, 0.563189)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Path2D/PathFollow2D/Sprite2D/OverlapArea"]
+shape = SubResource("CircleShape2D_66tet")
+
 [node name="Control" type="Control" parent="."]
 z_index = 2
 layout_mode = 3
@@ -88,13 +103,12 @@ offset_right = 552.0
 offset_bottom = 101.0
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Control"]
-visible = false
 layout_mode = 1
 anchors_preset = -1
-anchor_left = -1.175
-anchor_top = -0.1
-anchor_right = 0.7
-anchor_bottom = -0.1
+anchor_left = 9.6
+anchor_top = 1.225
+anchor_right = 11.475
+anchor_bottom = 1.225
 offset_right = 157.0
 offset_bottom = 64.0
 mouse_force_pass_scroll_events = false
@@ -104,3 +118,21 @@ bbcode_enabled = true
 fit_content = true
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
+
+[node name="Spray_Can" parent="." instance=ExtResource("8_66tet")]
+offset_left = 47.0001
+offset_top = 128.0
+offset_right = 207.0
+offset_bottom = 554.0
+
+[node name="NoMoreInk" type="RichTextLabel" parent="Spray_Can"]
+visible = false
+layout_mode = 0
+offset_left = -31.6251
+offset_top = 447.75
+offset_right = 223.375
+offset_bottom = 489.75
+theme_override_fonts/normal_font = SubResource("SystemFont_66tet")
+theme_override_font_sizes/normal_font_size = 30
+text = "No more ink!"
+fit_content = true
