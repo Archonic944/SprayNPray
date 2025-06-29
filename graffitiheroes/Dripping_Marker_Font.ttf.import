@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://djhsaha502kn3"
-path="res://.godot/imported/Dripping_Marker_Font.ttf-8fd4609709f1445ccf72e2dca4f3ccd3.fontdata"
+path="res://.godot/imported/Dripping_Marker_Font.ttf-3ffaa757670bc047ad5761173f128524.fontdata"
 
 [deps]
 
-source_file="res://addons/Dripping_Marker_Font.ttf"
-dest_files=["res://.godot/imported/Dripping_Marker_Font.ttf-8fd4609709f1445ccf72e2dca4f3ccd3.fontdata"]
+source_file="res://Dripping_Marker_Font.ttf"
+dest_files=["res://.godot/imported/Dripping_Marker_Font.ttf-3ffaa757670bc047ad5761173f128524.fontdata"]
 
 [params]
 
