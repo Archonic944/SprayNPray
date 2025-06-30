@@ -45,8 +45,16 @@ public partial class MainScene : Node2D
 		_mouseArea = GetNode<Area2D>("hitbox");
 		_sprayCan = GetNode<TextureRect>("Spray_Can");
 		Area2D overlapArea = GetNode<Area2D>("Path2D/PathFollow2D/Sprite2D/OverlapArea");
-		overlapArea.AreaEntered += (area) => _currentOverlaps.Add(area);
-		overlapArea.AreaExited += (area) => _currentOverlaps.Remove(area);
+		overlapArea.AreaEntered += (area) =>
+		{
+			_currentOverlaps.Add(area);
+			canPlaceDot = false;
+		};
+		overlapArea.AreaExited += (area) =>
+		{
+			_currentOverlaps.Remove(area);
+			if (_currentOverlaps.Count == 0) canPlaceDot = true;
+		};
 		init();
 		tweenSprayCan();
 		//get all curve resource names
@@ -99,6 +107,7 @@ public partial class MainScene : Node2D
 	private int potentialStars = 0;
 	private int potentialPoints = 0;
 	private int currentRound = 0;
+	private bool canPlaceDot = true;
 	private HashSet<Area2D> _currentOverlaps = [];
 	
 
@@ -179,6 +188,7 @@ public partial class MainScene : Node2D
 						_drawnSprites.Add(dot);
 						_lastUpdated = _elapsed;
 						inkLeft--;
+						canPlaceDot = false; // prevent placing more dots until the area is cleared, assumes the area is entered. if it isn't we have a big problem
 					}
 				}
 			}
@@ -335,6 +345,7 @@ public partial class MainScene : Node2D
 			}
 		}
 
+		canPlaceDot = true;
 		inkLeft = 1;
 		inkStartedWith = 1;
 		_currentOverlaps.Clear();
