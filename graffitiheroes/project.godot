@@ -13,10 +13,12 @@ config_version=5
 config/name="GraffitiHeroes"
 run/main_scene="uid://dh0qak1gbh2f8"
 config/features=PackedStringArray("4.4", "C#", "GL Compatibility")
+boot_splash/bg_color=Color(0.117349, 0.143311, 0.170278, 1)
+boot_splash/image="uid://csgaxvdgg8mfu"
 
 [display]
 
-window/size/mode=3
+window/size/mode=2
 window/stretch/mode="canvas_items"
 
 [dotnet]

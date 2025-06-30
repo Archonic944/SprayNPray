@@ -33,7 +33,7 @@ animations = [{
 size = Vector2(864.668, 899.397)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_66tet"]
-radius = 36.0
+radius = 44.9196
 
 [sub_resource type="SystemFont" id="SystemFont_gyfs4"]
 font_names = PackedStringArray("Chalkduster")
