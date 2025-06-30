@@ -161,7 +161,7 @@ public partial class MainScene : Node2D
 				}
 				//calculate how much ink the player needs based on the curve length
 				float curveLength = _path.Curve.GetBakedLength();
-				float inkNeeded = curveLength / 7.5f; // 10 pixels per ink unit
+				float inkNeeded = curveLength / 13.2f; // 13.2 pixels per ink unit
 				inkLeft = (int) Math.Ceiling(inkNeeded);
 				inkStartedWith = (int) Math.Ceiling(inkNeeded);
 				foreach (Sprite2D sprite in _sprites)
@@ -180,7 +180,7 @@ public partial class MainScene : Node2D
 			{
 				if (_canvas.GetOverlappingAreas().Count >= 1 && _currentOverlaps.Count == 0)
 				{
-					if (inkLeft > 0)
+					if (inkLeft > 0 && canPlaceDot)
 					{
 						var dot = (Sprite2D)_sprite.Duplicate();
 						dot.GlobalPosition = GetGlobalMousePosition();
